@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salary Band Calculator · apolitical</title>
+  <style>
+    .logo-svg { height: 20px; width: auto; display: block; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:          #171717;
+      --white:          #FFFFFF;
+      --brand-purple:   #776BE0;
+      --light-purple:   #E2E1FA;
+      --pale-purple:    #f0effd;
+      --brand-green:    #86EAD2;
+      --light-green:    #EBFAF6;
+      --brand-pink:     #F9A2B4;
+      --light-pink:     #FDDDE4;
+      --gray:           #F3F1F5;
+      --text:           #171717;
+      --muted:          #6b6b6b;
+      --border:         #e0dde8;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--black);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.38);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--black);
+      padding: 36px 32px 52px;
+      text-align: center;
+      color: var(--white);
+      border-bottom: 3px solid var(--brand-purple);
+    }
+
+    .hero h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      max-width: 380px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(23,23,23,0.1);
+      max-width: 600px;
+      width: calc(100% - 32px);
+      margin: -24px auto 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Currency toggle ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .currency-toggle {
+      display: flex;
+      background: var(--gray);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .currency-btn {
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .currency-btn.active {
+      background: var(--brand-purple);
+      color: var(--white);
+      box-shadow: 0 1px 4px rgba(119,107,224,0.35);
+    }
+
+    .rate-note {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 4px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .rate-note.visible { display: block; }
+
+    /* ── Selectors ── */
+    .selectors {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field select {
+      width: 100%;
+      padding: 11px 38px 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b6b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 13px center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field select:focus {
+      outline: none;
+      border-color: var(--brand-purple);
+      box-shadow: 0 0 0 3px rgba(119,107,224,0.15);
+    }
+
+    .field select:disabled {
+      background-color: var(--gray);
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    /* ── Results ── */
+    .results { display: none; flex-direction: column; gap: 4px; }
+    .results.visible { display: flex; }
+
+    .band-card {
+      border-radius: 12px;
+      padding: 20px 22px;
+      border: 1.5px solid transparent;
+    }
+
+    .band-card.current {
+      background: var(--light-purple);
+      border-color: var(--brand-purple);
+    }
+
+    .band-card.next-level {
+      background: var(--gray);
+      border-color: var(--border);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 3px 9px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+    }
+
+    .pill.current {
+      background: var(--brand-purple);
+      color: var(--white);
+    }
+
+    .pill.next-level {
+      background: #ddd;
+      color: var(--muted);
+    }
+
+    .band-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--black);
+    }
+
+    .salary-row {
+      display: flex;
+      gap: 32px;
+    }
+
+    .s-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .s-value {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--black);
+    }
+
+    .s-value.accent { color: var(--brand-purple); }
+
+    .arrow-row {
+      display: flex;
+      justify-content: center;
+      padding: 2px 0;
+      color: var(--brand-purple);
+      opacity: 0.5;
+    }
+
+    .top-badge {
+      background: var(--light-green);
+      border: 1.5px solid var(--brand-green);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #1a6b5a;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 28px 0 6px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .empty-state svg {
+      margin: 0 auto 10px;
+      display: block;
+      opacity: 0.25;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: auto;
+      padding: 20px 32px 28px;
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+      .selectors { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 22px; }
+      .card { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg class="logo-svg" viewBox="0 0 2338 480" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="apolitical">
+      <path d="M0 253.194C0 190.282 34.9204 114.479 111.437 114.479C150.979 114.479 173.575 137.168 192.576 183.578V127.37C192.576 124.276 194.63 122.214 197.711 122.214H267.552C270.633 122.214 272.687 124.276 272.687 127.37V379.533C272.687 382.627 270.633 384.69 267.552 384.69H197.711C194.63 384.69 192.576 382.627 192.576 379.533V323.325C177.683 359.422 159.196 391.393 111.437 391.393C40.5693 391.393 0 324.356 0 253.194ZM83.1927 253.194C83.1927 291.353 102.707 323.841 140.709 323.841C183.332 323.841 197.711 285.681 197.711 253.194C197.711 215.55 178.197 182.031 140.709 182.031C97.0582 182.031 83.1927 223.285 83.1927 253.194ZM330.349 472.854V127.37C330.349 124.276 332.403 122.214 335.484 122.214H404.666C407.747 122.214 409.801 124.276 409.801 127.37V183.578C425.207 139.231 451.911 114.479 490.426 114.479C565.916 114.479 601.35 185.641 601.35 253.194C601.35 326.419 559.24 392.425 490.426 392.425C447.803 392.425 421.613 359.422 409.801 322.294V474.884C409.801 479.01 406.771 479.883 403.639 479.883H337.162C332.556 479.883 330.349 476.914 330.349 472.854ZM404.152 253.194C404.152 285.681 418.018 323.841 461.668 323.841C497.616 323.841 518.671 293.416 518.671 253.194C518.671 218.644 502.751 182.031 461.668 182.031C424.18 182.031 404.152 215.034 404.152 253.194ZM645.514 252.678C645.514 165.014 707.138 113.447 782.628 113.447C860.686 113.447 920.256 167.593 920.256 252.678C920.256 326.419 869.416 392.425 782.628 392.425C708.165 392.425 645.514 338.795 645.514 252.678ZM725.112 252.678C725.112 280.009 738.464 323.841 782.628 323.841C826.792 323.841 840.144 280.009 840.144 252.678C840.144 216.066 819.603 181 782.628 181C745.654 181 725.112 216.066 725.112 252.678ZM967.501 379.017C967.501 382.111 969.555 384.174 972.636 384.174H1042.48C1045.56 384.174 1047.61 382.111 1047.61 379.017V19.5955C1047.61 16.5014 1045.56 14.4388 1042.48 14.4388H972.636C969.555 14.4388 967.501 16.5014 967.501 19.5955V379.017ZM1099.99 43.8319C1099.99 68.5841 1120.02 88.1795 1145.18 88.1795C1169.83 88.1795 1189.86 68.5841 1189.86 43.8319C1189.86 19.5955 1169.83 0 1145.18 0C1120.02 0 1099.99 19.5955 1099.99 43.8319ZM1105.13 379.017C1105.13 382.111 1107.18 384.174 1110.26 384.174H1180.62C1183.7 384.174 1185.75 382.111 1185.75 379.017V127.37C1185.75 124.276 1183.7 122.214 1180.62 122.214H1110.26C1107.18 122.214 1105.13 124.276 1105.13 127.37V379.017ZM1231.97 184.61V127.37C1231.97 124.276 1234.03 122.214 1237.11 122.214H1281.27V54.661C1281.27 51.567 1283.33 49.5043 1286.41 49.5043H1356.76C1359.84 49.5043 1361.9 51.567 1361.9 54.661V122.214H1427.12C1430.2 122.214 1432.25 124.276 1432.25 127.37V184.61C1432.25 187.704 1430.2 189.766 1427.12 189.766H1360.87V279.493C1360.87 312.496 1377.82 320.231 1402.47 320.231C1409.14 320.231 1416.84 319.715 1423.01 319.2C1428.14 318.168 1431.22 320.747 1431.22 325.903V375.923C1431.22 380.564 1429.17 383.143 1424.55 384.174C1414.79 386.237 1402.47 387.784 1381.41 387.784C1318.25 387.784 1281.27 362 1281.27 292.385V189.766H1237.11C1234.03 189.766 1231.97 187.704 1231.97 184.61ZM1487.2 43.8319C1487.2 68.5841 1507.23 88.1795 1532.39 88.1795C1557.04 88.1795 1577.07 68.5841 1577.07 43.8319C1577.07 19.5955 1557.04 0 1532.39 0C1507.23 0 1487.2 19.5955 1487.2 43.8319ZM1491.82 379.017C1491.82 382.111 1493.87 384.174 1496.96 384.174H1566.8C1569.88 384.174 1571.93 382.111 1571.93 379.017V127.37C1571.93 124.276 1569.88 122.214 1566.8 122.214H1496.96C1493.87 122.214 1491.82 124.276 1491.82 127.37V379.017ZM1622.26 252.678C1622.26 174.296 1672.07 113.447 1758.35 113.447C1827.16 113.447 1865.67 151.091 1883.13 194.923C1884.68 198.533 1883.13 200.596 1880.05 201.627L1817.4 223.285C1814.32 224.316 1812.27 223.285 1811.24 220.191C1803.54 198.533 1784.54 181 1758.35 181C1722.4 181 1702.37 213.487 1702.37 252.678C1702.37 285.681 1716.75 323.841 1758.35 323.841C1777.86 323.841 1803.02 311.98 1810.73 285.681C1811.75 283.103 1813.29 281.556 1815.35 282.071L1880.05 303.214C1882.62 304.245 1884.16 305.277 1884.16 307.855C1870.3 351.171 1825.11 392.425 1758.35 392.425C1681.32 392.425 1622.26 338.795 1622.26 252.678ZM1920.62 253.194C1920.62 190.282 1955.54 114.479 2032.06 114.479C2071.6 114.479 2094.2 137.168 2113.2 183.578V127.37C2113.2 124.276 2115.25 122.214 2118.33 122.214H2188.17C2191.26 122.214 2193.31 124.276 2193.31 127.37V379.533C2193.31 382.627 2191.26 384.69 2188.17 384.69H2118.33C2115.25 384.69 2113.2 382.627 2113.2 379.533V323.325C2098.31 359.422 2079.82 391.393 2032.06 391.393C1961.19 391.393 1920.62 324.356 1920.62 253.194ZM2003.82 253.194C2003.82 291.353 2023.33 323.841 2061.33 323.841C2103.95 323.841 2118.33 285.681 2118.33 253.194C2118.33 215.55 2098.82 182.031 2061.33 182.031C2017.68 182.031 2003.82 223.285 2003.82 253.194ZM2258.02 379.017C2258.02 382.111 2260.07 384.174 2263.15 384.174H2332.48C2335.56 384.174 2337.61 382.111 2337.61 379.017V19.5955C2337.61 16.5014 2335.56 14.4388 2332.48 14.4388H2263.15C2260.07 14.4388 2258.02 16.5014 2258.02 19.5955V379.017Z" fill="white"/>
+      <path d="M147.866 428.193C174.816 428.193 199.347 432.013 222.496 441.391C240.461 448.892 256.433 458.395 270.418 470.43C271.292 471.182 271.786 472.282 271.786 473.435V475.985C271.786 478.202 269.989 480 267.771 480H27.2711C25.0537 480 23.2561 478.202 23.2561 475.985V474.141C23.2561 472.991 23.7475 471.895 24.6166 471.142C38.8999 458.768 54.9193 449.039 73.2375 441.391C95.6953 432.013 120.917 428.193 147.866 428.193Z" fill="white"/>
+    </svg>
+  </div>
+  <div class="header-label">Salary Bands</div>
+</header>
+
+<div class="hero">
+  <h1>Find your salary band</h1>
+  <p>Select your role and level to see your current band and the one above.</p>
+</div>
+
+<div class="card">
+
+  <div class="top-bar">
+    <div>
+      <div class="currency-toggle">
+        <button class="currency-btn active" id="btnGBP" onclick="setCurrency('GBP')">£ GBP</button>
+        <button class="currency-btn" id="btnEUR" onclick="setCurrency('EUR')">€ EUR</button>
+      </div>
+      <div class="rate-note" id="rateNote">Converted from GBP at indicative rate (1 GBP ≈ 1.18 EUR)</div>
+    </div>
+  </div>
+
+  <div class="selectors">
+    <div class="field">
+      <label>Role</label>
+      <select id="roleSelect">
+        <option value="">Select a role…</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Level</label>
+      <select id="levelSelect" disabled>
+        <option value="">Select a level…</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="band-card current">
+      <div class="pill current">
+        <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
+        Your current band
+      </div>
+      <div class="band-title" id="currentTitle"></div>
+      <div class="salary-row">
+        <div>
+          <div class="s-label">Min</div>
+          <div class="s-value accent" id="currentMin"></div>
+        </div>
+        <div>
+          <div class="s-label">Max</div>
+          <div class="s-value accent" id="currentMax"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-row">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="10" y1="3" x2="10" y2="17"/><polyline points="5 12 10 17 15 12"/>
+      </svg>
+    </div>
+
+    <div id="nextWrapper"></div>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2"/>
+      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+      <line x1="12" y1="12" x2="12" y2="16"/>
+      <line x1="10" y1="14" x2="14" y2="14"/>
+    </svg>
+    Choose your role and level to see your salary band.
+  </div>
+
+</div>
+
+<footer>
+  apolitical · People team<br>
+  Salary bands are reviewed annually · EUR figures are indicative conversions from GBP benchmarks
+</footer>
+
+<script>
+const BANDS = {
+  "Comms": [
+    { level: "Junior",    min: 37000,  max: 43000  },
+    { level: "Mid-level", min: 48000,  max: 56000  },
+    { level: "Senior",    min: 62000,  max: 72000  },
+    { level: "Head of",   min: 78000,  max: 90000  },
+    { level: "VP",        min: 134000, max: 156000 }
+  ],
+  "Community Management": [
+    { level: "Junior",    min: 35000,  max: 41000  },
+    { level: "Mid-level", min: 45000,  max: 53000  },
+    { level: "Senior",    min: 60000,  max: 70000  },
+    { level: "Head of",   min: 79000,  max: 91000  },
+    { level: "VP",        min: 120000, max: 140000 }
+  ],
+  "Data Analytics": [
+    { level: "Junior",    min: 37000, max: 43000 },
+    { level: "Mid-level", min: 49000, max: 57000 },
+    { level: "Senior",    min: 65000, max: 75000 },
+    { level: "Head of",   min: 83000, max: 97000 }
+  ],
+  "Data Engineering": [
+    { level: "Junior",    min: 47000,  max: 55000  },
+    { level: "Mid-level", min: 62000,  max: 72000  },
+    { level: "Senior",    min: 78000,  max: 90000  },
+    { level: "Head of",   min: 96000,  max: 112000 }
+  ],
+  "Data Science": [
+    { level: "Junior",    min: 48000,  max: 56000  },
+    { level: "Mid-level", min: 62000,  max: 72000  },
+    { level: "Senior",    min: 78000,  max: 90000  },
+    { level: "Head of",   min: 102000, max: 118000 },
+    { level: "Director",  min: 120000, max: 140000 }
+  ],
+  "Delivery Management": [
+    { level: "Junior",    min: 37000,  max: 43000  },
+    { level: "Mid-level", min: 48000,  max: 56000  },
+    { level: "Senior",    min: 65000,  max: 75000  },
+    { level: "Head of",   min: 84000,  max: 98000  },
+    { level: "Director",  min: 106000, max: 124000 },
+    { level: "VP",        min: 120000, max: 140000 }
+  ],
+  "DevOps": [
+    { level: "Junior",           min: 50000,  max: 58000  },
+    { level: "Mid-level",        min: 64000,  max: 74000  },
+    { level: "Senior",           min: 81000,  max: 95000  },
+    { level: "Tech Lead",        min: 102000, max: 118000 },
+    { level: "Senior Tech Lead", min: null,   max: null   },
+    { level: "Director",         min: null,   max: null   }
+  ],
+  "Evaluation": [
+    { level: "Junior",    min: 36000,  max: 42000  },
+    { level: "Mid-level", min: 49000,  max: 57000  },
+    { level: "Senior",    min: 65000,  max: 75000  },
+    { level: "Head of",   min: 81000,  max: 95000  },
+    { level: "Director",  min: 99000,  max: 115000 }
+  ],
+  "Events": [
+    { level: "Junior",    min: 37000,  max: 43000  },
+    { level: "Mid-level", min: 48000,  max: 56000  },
+    { level: "Senior",    min: 63000,  max: 73000  },
+    { level: "Head of",   min: 78000,  max: 90000  },
+    { level: "Director",  min: 100000, max: 116000 }
+  ],
+  "Growth": [
+    { level: "Junior",    min: 39000,  max: 45000  },
+    { level: "Mid-level", min: 53000,  max: 61000  },
+    { level: "Senior",    min: 68000,  max: 80000  },
+    { level: "Head of",   min: 87000,  max: 101000 },
+    { level: "Director",  min: 106000, max: 124000 }
+  ],
+  "Learning Design": [
+    { level: "Junior",    min: 35000, max: 41000 },
+    { level: "Mid-level", min: 46000, max: 54000 },
+    { level: "Senior",    min: 57000, max: 67000 }
+  ],
+  "Learning Manager": [
+    { level: "Senior",   min: 65000,  max: 75000  },
+    { level: "Head of",  min: 82000,  max: 96000  },
+    { level: "Director", min: 106000, max: 124000 }
+  ],
+  "Ops": [
+    { level: "Junior",    min: 40000,  max: 46000  },
+    { level: "Mid-level", min: 52000,  max: 60000  },
+    { level: "Senior",    min: 68000,  max: 78000  },
+    { level: "Head of",   min: 96000,  max: 112000 },
+    { level: "Director",  min: 116000, max: 134000 }
+  ],
+  "Partnerships": [
+    { level: "Junior",    min: 37000,  max: 43000  },
+    { level: "Mid-level", min: 48000,  max: 56000  },
+    { level: "Senior",    min: 65000,  max: 75000  },
+    { level: "Head of",   min: 84000,  max: 98000  },
+    { level: "Director",  min: 106000, max: 124000 }
+  ],
+  "People": [
+    { level: "Junior",    min: 40000,  max: 46000  },
+    { level: "Mid-level", min: 52000,  max: 60000  },
+    { level: "Senior",    min: 68000,  max: 78000  },
+    { level: "Head of",   min: 83000,  max: 97000  },
+    { level: "Director",  min: 102000, max: 118000 }
+  ],
+  "Product Design": [
+    { level: "Junior",    min: 42000,  max: 48000  },
+    { level: "Mid-level", min: 59000,  max: 69000  },
+    { level: "Senior",    min: 74000,  max: 86000  },
+    { level: "Head of",   min: 93000,  max: 108000 }
+  ],
+  "Product Management": [
+    { level: "Junior",    min: 46000,  max: 54000  },
+    { level: "Mid-level", min: 61000,  max: 71000  },
+    { level: "Senior",    min: 78000,  max: 90000  },
+    { level: "Head of",   min: 97000,  max: 113000 },
+    { level: "Director",  min: 120000, max: 140000 }
+  ],
+  "Sales": [
+    { level: "Junior",    min: 37000,  max: 43000  },
+    { level: "Mid-level", min: 50000,  max: 58000  },
+    { level: "Senior",    min: 67000,  max: 77000  },
+    { level: "Head of",   min: 85000,  max: 99000  },
+    { level: "Director",  min: 111000, max: 129000 },
+    { level: "VP",        min: 139000, max: 161000 }
+  ],
+  "Software Engineering": [
+    { level: "Junior",           min: 49000,  max: 57000  },
+    { level: "Mid-level",        min: 64000,  max: 74000  },
+    { level: "Senior",           min: 80000,  max: 94000  },
+    { level: "Tech Lead",        min: 102000, max: 118000 },
+    { level: "Senior Tech Lead", min: 120000, max: 140000 },
+    { level: "Director",         min: 143000, max: 167000 }
+  ],
+  "User Research": [
+    { level: "Junior",    min: 37000, max: 43000 },
+    { level: "Mid-level", min: 51000, max: 59000 },
+    { level: "Senior",    min: 65000, max: 75000 },
+    { level: "Head of",   min: 83000, max: 97000 }
+  ]
+};
+
+const EUR_RATE = 1.18;
+let currency = 'GBP';
+
+function fmt(n) {
+  if (n === null || n === undefined) return '—';
+  const val = currency === 'EUR' ? Math.round(n * EUR_RATE / 1000) * 1000 : n;
+  const sym = currency === 'EUR' ? '€' : '£';
+  return sym + val.toLocaleString('en-GB');
+}
+
+function bandHasData(band) {
+  return band && band.min !== null && band.max !== null;
+}
+
+function setCurrency(c) {
+  currency = c;
+  document.getElementById('btnGBP').classList.toggle('active', c === 'GBP');
+  document.getElementById('btnEUR').classList.toggle('active', c === 'EUR');
+  document.getElementById('rateNote').classList.toggle('visible', c === 'EUR');
+  refreshDisplay();
+}
+
+let currentBand = null;
+let nextBand    = null;
+let currentRole = '';
+
+function renderCards() {
+  if (!currentBand) return;
+
+  // Current band
+  const cMin = document.getElementById('currentMin');
+  const cMax = document.getElementById('currentMax');
+  if (bandHasData(currentBand)) {
+    cMin.textContent = fmt(currentBand.min);
+    cMax.textContent = fmt(currentBand.max);
+    cMin.style.fontStyle = cMax.style.fontStyle = 'normal';
+  } else {
+    cMin.textContent = 'Band TBC'; cMax.textContent = '';
+    cMin.style.fontStyle = 'italic';
+  }
+
+  // Next band (only update salary values if card already rendered with IDs)
+  const nMin = document.getElementById('nextMin');
+  const nMax = document.getElementById('nextMax');
+  if (nMin && bandHasData(nextBand)) {
+    nMin.textContent = fmt(nextBand.min);
+    nMax.textContent = fmt(nextBand.max);
+  }
+}
+
+function refreshDisplay() { renderCards(); }
+
+const roleSelect  = document.getElementById('roleSelect');
+const levelSelect = document.getElementById('levelSelect');
+const results     = document.getElementById('results');
+const emptyState  = document.getElementById('emptyState');
+const nextWrapper = document.getElementById('nextWrapper');
+
+Object.keys(BANDS).sort().forEach(role => {
+  const opt = document.createElement('option');
+  opt.value = role; opt.textContent = role;
+  roleSelect.appendChild(opt);
+});
+
+roleSelect.addEventListener('change', () => {
+  const role = roleSelect.value;
+  levelSelect.innerHTML = '<option value="">Select a level…</option>';
+  levelSelect.disabled = !role;
+  results.classList.remove('visible');
+  emptyState.style.display = '';
+  currentBand = null; nextBand = null;
+
+  if (role) {
+    BANDS[role].forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.level; opt.textContent = b.level;
+      levelSelect.appendChild(opt);
+    });
+  }
+});
+
+levelSelect.addEventListener('change', () => {
+  const role  = roleSelect.value;
+  const level = levelSelect.value;
+
+  if (!role || !level) {
+    results.classList.remove('visible');
+    emptyState.style.display = '';
+    currentBand = null; nextBand = null;
+    return;
+  }
+
+  const levels = BANDS[role];
+  const idx    = levels.findIndex(b => b.level === level);
+  currentBand  = levels[idx];
+  nextBand     = levels[idx + 1] || null;
+  currentRole  = role;
+
+  document.getElementById('currentTitle').textContent = `${role} · ${currentBand.level}`;
+
+  // Render current band values
+  const cMin = document.getElementById('currentMin');
+  const cMax = document.getElementById('currentMax');
+  if (bandHasData(currentBand)) {
+    cMin.textContent = fmt(currentBand.min);
+    cMax.textContent = fmt(currentBand.max);
+    cMin.style.fontStyle = cMax.style.fontStyle = 'normal';
+  } else {
+    cMin.textContent = 'Band TBC'; cMax.textContent = '';
+    cMin.style.fontStyle = 'italic';
+  }
+
+  // Render next band card
+  if (!nextBand) {
+    nextWrapper.innerHTML = `<div class="top-badge">
+      <span style="font-size:20px">🎉</span>
+      <span>You're at the top level for this role!</span>
+    </div>`;
+  } else if (!bandHasData(nextBand)) {
+    nextWrapper.innerHTML = `<div class="band-card next-level">
+      <div class="pill next-level">Level above</div>
+      <div class="band-title">${role} · ${nextBand.level}</div>
+      <p style="font-size:13px;color:var(--muted);font-style:italic;margin-top:4px;">Band not yet defined — contact the People team.</p>
+    </div>`;
+  } else {
+    nextWrapper.innerHTML = `<div class="band-card next-level">
+      <div class="pill next-level">Level above</div>
+      <div class="band-title">${role} · ${nextBand.level}</div>
+      <div class="salary-row">
+        <div><div class="s-label">Min</div><div class="s-value" id="nextMin">${fmt(nextBand.min)}</div></div>
+        <div><div class="s-label">Max</div><div class="s-value" id="nextMax">${fmt(nextBand.max)}</div></div>
+      </div>
+    </div>`;
+  }
+
+  emptyState.style.display = 'none';
+  results.classList.add('visible');
+});
+</script>
+</body>
+</html>
