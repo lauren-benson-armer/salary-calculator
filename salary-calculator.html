@@ -4,33 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Salary Band Calculator · apolitical</title>
-  <style>
-    .logo-svg { height: 20px; width: auto; display: block; }
-  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black:          #171717;
-      --white:          #FFFFFF;
-      --brand-purple:   #776BE0;
-      --light-purple:   #E2E1FA;
-      --pale-purple:    #f0effd;
-      --brand-green:    #86EAD2;
-      --light-green:    #EBFAF6;
-      --brand-pink:     #F9A2B4;
-      --light-pink:     #FDDDE4;
-      --gray:           #F3F1F5;
-      --text:           #171717;
-      --muted:          #6b6b6b;
-      --border:         #e0dde8;
+      --black:     #111111;
+      --white:     #FFFFFF;
+      --off-white: #F7F7F5;
+      --border:    #E5E5E1;
+      --text:      #111111;
+      --muted:     #6A6A6A;
+      --subtle:    #9A9A9A;
+
+      /* Gradient — periwinkle/lilac, close to the Apolitical purple family */
+      --grad-a: #D8DCF8;
+      --grad-b: #C8C8F0;
+      --grad-c: #DCC8F0;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--gray);
+      font-family: 'Figtree', -apple-system, sans-serif;
+      background: var(--off-white);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -48,14 +45,12 @@
       flex-shrink: 0;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-    }
+    .logo { display: flex; align-items: center; }
+    .logo-svg { height: 20px; width: auto; display: block; }
 
     .header-label {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: rgba(255,255,255,0.38);
@@ -63,37 +58,38 @@
 
     /* ── Hero ── */
     .hero {
-      background: var(--black);
-      padding: 36px 32px 52px;
+      background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 50%, var(--grad-c) 100%);
+      padding: 48px 32px 56px;
       text-align: center;
-      color: var(--white);
-      border-bottom: 3px solid var(--brand-purple);
     }
 
     .hero h1 {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
+      font-family: 'Lora', Georgia, serif;
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      color: var(--black);
+      margin-bottom: 10px;
     }
 
     .hero p {
       font-size: 14px;
-      color: rgba(255,255,255,0.55);
+      color: #4A4A4A;
       max-width: 380px;
       margin: 0 auto;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     /* ── Card ── */
     .card {
       background: var(--white);
-      border-radius: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
       padding: 28px;
-      box-shadow: 0 4px 20px rgba(23,23,23,0.1);
       max-width: 600px;
       width: calc(100% - 32px);
-      margin: -24px auto 32px;
+      margin: -28px auto 32px;
       position: relative;
       z-index: 1;
     }
@@ -108,36 +104,38 @@
 
     .currency-toggle {
       display: flex;
-      background: var(--gray);
-      border-radius: 8px;
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: 50px;
       padding: 3px;
       gap: 2px;
     }
 
     .currency-btn {
-      padding: 5px 14px;
-      border-radius: 6px;
+      padding: 6px 16px;
+      border-radius: 50px;
       border: none;
       background: transparent;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 600;
+      font-family: 'Figtree', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
       color: var(--muted);
       cursor: pointer;
       transition: all 0.15s;
     }
 
     .currency-btn.active {
-      background: var(--brand-purple);
+      background: var(--black);
       color: var(--white);
-      box-shadow: 0 1px 4px rgba(119,107,224,0.35);
     }
+
+    .currency-btn:not(.active):hover { color: var(--black); }
 
     .rate-note {
       font-size: 10px;
-      color: var(--muted);
+      color: var(--subtle);
       text-align: right;
-      margin-top: 4px;
+      margin-top: 6px;
       margin-bottom: 16px;
       display: none;
     }
@@ -152,43 +150,43 @@
       margin-bottom: 24px;
     }
 
+    .field { display: flex; flex-direction: column; gap: 7px; }
+
     .field label {
-      display: block;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 6px;
+      letter-spacing: 1px;
+      color: var(--subtle);
     }
 
     .field select {
       width: 100%;
-      padding: 11px 38px 11px 14px;
+      padding: 10px 38px 10px 14px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
       background: var(--white);
-      font-family: inherit;
+      font-family: 'Figtree', sans-serif;
       font-size: 14px;
       font-weight: 500;
       color: var(--text);
       cursor: pointer;
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b6b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A9A9A' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 13px center;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      transition: border-color 0.15s;
     }
 
     .field select:focus {
       outline: none;
-      border-color: var(--brand-purple);
-      box-shadow: 0 0 0 3px rgba(119,107,224,0.15);
+      border-color: var(--black);
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.07);
     }
 
     .field select:disabled {
-      background-color: var(--gray);
-      color: #aaa;
+      background-color: var(--off-white);
+      color: var(--subtle);
       cursor: not-allowed;
     }
 
@@ -199,17 +197,16 @@
     .band-card {
       border-radius: 12px;
       padding: 20px 22px;
-      border: 1.5px solid transparent;
+      border: 1px solid var(--border);
     }
 
     .band-card.current {
-      background: var(--light-purple);
-      border-color: var(--brand-purple);
+      background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-c) 100%);
+      border-color: rgba(0,0,0,0.12);
     }
 
     .band-card.next-level {
-      background: var(--gray);
-      border-color: var(--border);
+      background: var(--off-white);
     }
 
     .pill {
@@ -220,24 +217,24 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      padding: 3px 9px;
+      padding: 3px 10px;
       border-radius: 100px;
       margin-bottom: 10px;
     }
 
     .pill.current {
-      background: var(--brand-purple);
+      background: var(--black);
       color: var(--white);
     }
 
     .pill.next-level {
-      background: #ddd;
+      background: var(--border);
       color: var(--muted);
     }
 
     .band-title {
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 600;
       margin-bottom: 16px;
       color: var(--black);
     }
@@ -249,55 +246,53 @@
 
     .s-label {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 1px;
       color: var(--muted);
       margin-bottom: 2px;
     }
 
     .s-value {
+      font-family: 'Lora', Georgia, serif;
       font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-weight: 500;
+      letter-spacing: -0.3px;
       color: var(--black);
     }
-
-    .s-value.accent { color: var(--brand-purple); }
 
     .arrow-row {
       display: flex;
       justify-content: center;
       padding: 2px 0;
-      color: var(--brand-purple);
-      opacity: 0.5;
+      color: var(--subtle);
     }
 
     .top-badge {
-      background: var(--light-green);
-      border: 1.5px solid var(--brand-green);
+      border: 1px solid var(--border);
       border-radius: 12px;
+      background: var(--off-white);
       padding: 16px 20px;
       display: flex;
       align-items: center;
       gap: 12px;
-      color: #1a6b5a;
       font-size: 14px;
       font-weight: 500;
+      color: var(--text);
     }
 
     /* ── Empty state ── */
     .empty-state {
       text-align: center;
       padding: 28px 0 6px;
-      color: #aaa;
+      color: var(--subtle);
       font-size: 14px;
     }
 
     .empty-state svg {
       margin: 0 auto 10px;
       display: block;
-      opacity: 0.25;
+      opacity: 0.3;
     }
 
     /* ── Footer ── */
@@ -306,13 +301,13 @@
       padding: 20px 32px 28px;
       text-align: center;
       font-size: 11px;
-      color: #aaa;
-      line-height: 1.6;
+      color: var(--subtle);
+      line-height: 1.7;
     }
 
     @media (max-width: 480px) {
       .selectors { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 22px; }
+      .hero h1 { font-size: 26px; }
       .card { padding: 20px 16px; }
     }
   </style>
@@ -371,11 +366,11 @@
       <div class="salary-row">
         <div>
           <div class="s-label">Min</div>
-          <div class="s-value accent" id="currentMin"></div>
+          <div class="s-value" id="currentMin"></div>
         </div>
         <div>
           <div class="s-label">Max</div>
-          <div class="s-value accent" id="currentMax"></div>
+          <div class="s-value" id="currentMax"></div>
         </div>
       </div>
     </div>
@@ -413,6 +408,7 @@ const BANDS = {
     { level: "Mid-level", min: 48000,  max: 56000  },
     { level: "Senior",    min: 62000,  max: 72000  },
     { level: "Head of",   min: 78000,  max: 90000  },
+    { level: "Director",  min: 105000, max: 125000 },
     { level: "VP",        min: 134000, max: 156000 }
   ],
   "Community Management": [
@@ -420,6 +416,7 @@ const BANDS = {
     { level: "Mid-level", min: 45000,  max: 53000  },
     { level: "Senior",    min: 60000,  max: 70000  },
     { level: "Head of",   min: 79000,  max: 91000  },
+    { level: "Director",  min: 100000, max: 115000 },
     { level: "VP",        min: 120000, max: 140000 }
   ],
   "Data Analytics": [
@@ -535,7 +532,7 @@ const BANDS = {
     { level: "Mid-level",        min: 64000,  max: 74000  },
     { level: "Senior",           min: 80000,  max: 94000  },
     { level: "Tech Lead",        min: 102000, max: 118000 },
-    { level: "Senior Tech Lead", min: 120000, max: 140000 },
+    { level: "Lead Staff",       min: 120000, max: 140000 },
     { level: "Director",         min: 143000, max: 167000 }
   ],
   "User Research": [
@@ -575,7 +572,6 @@ let currentRole = '';
 function renderCards() {
   if (!currentBand) return;
 
-  // Current band
   const cMin = document.getElementById('currentMin');
   const cMax = document.getElementById('currentMax');
   if (bandHasData(currentBand)) {
@@ -587,7 +583,6 @@ function renderCards() {
     cMin.style.fontStyle = 'italic';
   }
 
-  // Next band (only update salary values if card already rendered with IDs)
   const nMin = document.getElementById('nextMin');
   const nMax = document.getElementById('nextMax');
   if (nMin && bandHasData(nextBand)) {
@@ -646,7 +641,6 @@ levelSelect.addEventListener('change', () => {
 
   document.getElementById('currentTitle').textContent = `${role} · ${currentBand.level}`;
 
-  // Render current band values
   const cMin = document.getElementById('currentMin');
   const cMax = document.getElementById('currentMax');
   if (bandHasData(currentBand)) {
@@ -658,7 +652,6 @@ levelSelect.addEventListener('change', () => {
     cMin.style.fontStyle = 'italic';
   }
 
-  // Render next band card
   if (!nextBand) {
     nextWrapper.innerHTML = `<div class="top-badge">
       <span style="font-size:20px">🎉</span>
